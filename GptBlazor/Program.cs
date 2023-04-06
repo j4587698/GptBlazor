@@ -1,6 +1,10 @@
+using GptBlazor;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using GptBlazor.Data;
+using Microsoft.Extensions.Primitives;
+using Toolbelt.Blazor.Extensions.DependencyInjection;
+using App = Furion.App;
 
 var builder = WebApplication.CreateBuilder(args).Inject();
 
@@ -9,6 +13,19 @@ builder.Services.AddRazorPages().AddInjectBase();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddBootstrapBlazor();
+builder.Services.AddHotKeys2();
+
+var config = App.Configuration.GetSection("ChatGpt");
+Constant.ResourceName = config["ResourceName"];
+Constant.DeploymentId = config["DeploymentId"];
+Constant.ApiKey = config["ApiKey"];
+ChangeToken.OnChange(() => config.GetReloadToken(), () =>
+{
+    Constant.ResourceName = config["ResourceName"];
+    Constant.DeploymentId = config["DeploymentId"];
+    Constant.ApiKey = config["ApiKey"];
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
