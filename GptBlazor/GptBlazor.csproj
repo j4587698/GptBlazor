@@ -5,6 +5,7 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
       <UserSecretsId>c76d0bd7-b6fa-4aaa-baeb-49ab35f36fc4</UserSecretsId>
+      <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
 
     <ItemGroup>
@@ -12,6 +13,7 @@
       <PackageReference Include="BootstrapBlazor.FontAwesome" Version="7.3.0" />
       <PackageReference Include="Furion" Version="4.8.7.35" />
       <PackageReference Include="Markdig" Version="0.31.0" />
+      <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.18.1" />
       <PackageReference Include="OpenAI" Version="1.7.2" />
       <PackageReference Include="Toolbelt.Blazor.HotKeys2" Version="1.0.0" />
     </ItemGroup>
