@@ -85,6 +85,7 @@ public partial class Index : IAsyncDisposable
         _isThinking = false;
         _response = string.Empty;
         StateHasChanged();
+        await JsRuntime.InvokeVoidAsync("highlight");
         await JsRuntime.InvokeVoidAsync("scrollToBottom");
         await Input.FocusAsync();
     }

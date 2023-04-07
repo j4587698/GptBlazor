@@ -3,6 +3,8 @@
     element.scrollTop = element.scrollHeight;
 }
 
-function focusInput(element) {
-    element.focus();
+function highlight(){
+        document.querySelectorAll('pre code').forEach((el) => {
+            hljs.highlightElement(el);
+    });
 }
