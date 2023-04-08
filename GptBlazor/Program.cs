@@ -9,7 +9,8 @@ using App = Furion.App;
 var builder = WebApplication.CreateBuilder(args).Inject();
 
 // Add services to the container.
-builder.Services.AddRazorPages().AddInjectBase();
+builder.Services.AddControllers().AddInject();
+builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddBootstrapBlazor();
@@ -39,7 +40,7 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();
-app.UseInjectBase();
+app.UseInject();
 app.UseRouting();
 
 app.MapBlazorHub();
