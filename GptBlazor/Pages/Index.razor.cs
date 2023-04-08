@@ -69,12 +69,21 @@ public partial class Index : IAsyncDisposable
         _isThinking = true;
         StateHasChanged();
         await JsRuntime.InvokeVoidAsync("scrollToBottom");
+        var now = DateTime.Now;
         await foreach (var str in OpenAiService.StreamResponseEnumerableFromChatbotAsync(input))
         {
             _response += str;
-            StateHasChanged();
-            await JsRuntime.InvokeVoidAsync("scrollToBottom");
+            if (DateTime.Now - now >= TimeSpan.FromSeconds(1))
+            {
+                now = DateTime.Now;
+                StateHasChanged();
+                await JsRuntime.InvokeVoidAsync("scrollToBottom");
+            }
+            
         }
+        
+        StateHasChanged();
+        await JsRuntime.InvokeVoidAsync("scrollToBottom");
         
         _messages.Add(new Message
         {
