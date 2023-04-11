@@ -6,14 +6,19 @@ namespace GptBlazor.Service;
 
 public class OpenAiService : IScoped
 {
-
-    private readonly Conversation conversation;
+    private readonly OpenAIAPI _api;
+    private Conversation conversation;
 
     public OpenAiService()
     {
-        var api = OpenAIAPI.ForAzure(Constant.ResourceName, Constant.DeploymentId, Constant.ApiKey);
-        api.ApiVersion = "2023-03-15-preview";
-        conversation = api.Chat.CreateConversation();
+        _api = OpenAIAPI.ForAzure(Constant.ResourceName, Constant.DeploymentId, Constant.ApiKey);
+        _api.ApiVersion = "2023-03-15-preview";
+        conversation = _api.Chat.CreateConversation();
+    }
+    
+    public void CreateNewConversation()
+    {
+        conversation = _api.Chat.CreateConversation();
     }
 
     public void AddUserInputWithExampleOutput(string userInput, string exampleOutput)

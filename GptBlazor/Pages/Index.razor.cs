@@ -63,7 +63,7 @@ public partial class Index : IAsyncDisposable
         _messages.Add(new Message
         {
             IsBoot = false,
-            ChatMessage = input,
+            ChatMessage = Markdown.ToHtml(input),
             CreateTime = DateTime.Now
         });
         _isThinking = true;
@@ -88,7 +88,7 @@ public partial class Index : IAsyncDisposable
         _messages.Add(new Message
         {
             IsBoot = true,
-            ChatMessage = Markdown.ToHtml(_response),
+            ChatMessage = _response,
             CreateTime = DateTime.Now
         });
         _isThinking = false;
@@ -96,6 +96,13 @@ public partial class Index : IAsyncDisposable
         StateHasChanged();
         await JsRuntime.InvokeVoidAsync("highlight");
         await JsRuntime.InvokeVoidAsync("scrollToBottom");
+        await Input.FocusAsync();
+    }
+
+    public async Task CreateNewChat()
+    {
+        OpenAiService.CreateNewConversation();
+        _messages.Clear();
         await Input.FocusAsync();
     }
 
