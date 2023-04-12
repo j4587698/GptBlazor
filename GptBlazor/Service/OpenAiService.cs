@@ -21,7 +21,12 @@ public class OpenAiService : IScoped
         conversation = _api.Chat.CreateConversation();
     }
 
-    public void AddUserInputWithExampleOutput(string userInput, string exampleOutput)
+    public void AddSystemInput(string input)
+    {
+        conversation.AppendSystemMessage(input);
+    }
+
+    public void AddUserInputWithExampleOutput(string? userInput, string? exampleOutput)
     {
         conversation.AppendUserInput(userInput);
         conversation.AppendExampleChatbotOutput(exampleOutput);

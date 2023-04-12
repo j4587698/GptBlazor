@@ -1,6 +1,9 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Text;
 using BootstrapBlazor.Components;
 using Furion.LinqBuilder;
+using GptBlazor.Components;
+using GptBlazor.Entity;
 using GptBlazor.Service;
 using Markdig;
 using Microsoft.AspNetCore.Components;
@@ -12,7 +15,7 @@ namespace GptBlazor.Pages;
 
 public partial class Index : IAsyncDisposable
 {
-    private List<Message> _messages;
+    private readonly List<Message> _messages = new List<Message>();
     
     [Inject]
     [NotNull]
@@ -24,11 +27,20 @@ public partial class Index : IAsyncDisposable
     
     [Inject]
     [NotNull]
-    private HotKeys HotKeys { get; set; }
+    private HotKeys? HotKeys { get; set; }
+    
+    [Inject]
+    [NotNull]
+    private DialogService? DialogService { get; set; }
     
     private ElementReference Input { get; set; }
     
+    [NotNull]
     private Button? SubmitButton { get; set; }
+    
+    [Inject]
+    [NotNull]
+    private DownloadService? DownloadService { get; set; }
     
     private string _userInput = string.Empty;
     
@@ -36,13 +48,17 @@ public partial class Index : IAsyncDisposable
     
     private bool _isThinking = false;
 
-    private HotKeysContext HotKeysContext;
+    private HotKeysContext? _hotKeysContext;
+
+    private InitInfoEntity _initInfoEntity = new();
+
+    private MarkdownPipeline? _pipeline;
     
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        _messages = new List<Message>();
-        this.HotKeysContext = this.HotKeys.CreateContext()
+        _pipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().UseBootstrap().Build();
+        this._hotKeysContext = this.HotKeys.CreateContext()
             .Add(ModCode.Ctrl, Code.Enter, async () =>
             {
                 await SubmitButton.FocusAsync();
@@ -63,7 +79,7 @@ public partial class Index : IAsyncDisposable
         _messages.Add(new Message
         {
             IsBoot = false,
-            ChatMessage = Markdown.ToHtml(input),
+            ChatMessage = input,
             CreateTime = DateTime.Now
         });
         _isThinking = true;
@@ -99,11 +115,49 @@ public partial class Index : IAsyncDisposable
         await Input.FocusAsync();
     }
 
-    public async Task CreateNewChat()
+    private async Task CreateNewChat()
     {
         OpenAiService.CreateNewConversation();
         _messages.Clear();
         await Input.FocusAsync();
+    }
+
+    private async Task InitBot()
+    {
+        await DialogService.ShowModal<InitInfoComponent>(new ResultDialogOption()
+        {
+            Title = "添加初始设置",
+            ComponentParamters = new Dictionary<string, object>()
+            {
+                [nameof(InitInfoComponent.InitInfo)] = _initInfoEntity
+            }
+        });
+        await CreateNewChat();
+        if (!_initInfoEntity.SystemInfo.IsNullOrEmpty())
+        {
+            OpenAiService.AddSystemInput(_initInfoEntity.SystemInfo!);
+        }
+        
+        foreach (var simpleBot in _initInfoEntity.SimpleBots)
+        {
+            OpenAiService.AddUserInputWithExampleOutput(simpleBot.UserInput, simpleBot.SimpleOutput);
+        }
+    }
+    
+    private async Task Download()
+    {
+        var ms = new MemoryStream();
+        var writer = new StreamWriter(ms);
+        foreach (var message in _messages)
+        {
+            await writer.WriteLineAsync(message.IsBoot ? "# ChatGPT" : "# User");
+            await writer.WriteLineAsync(message.ChatMessage);
+            await writer.WriteLineAsync(message.CreateTime.ToString("yyyy-MM-dd HH:mm:ss"));
+            await writer.FlushAsync();
+        }
+
+        ms.Position = 0;
+        await DownloadService.DownloadFromStreamAsync("ChatGPT.txt", ms);
     }
 
     public async ValueTask DisposeAsync()

@@ -15,8 +15,8 @@
             <h5 class="mb-0">Chat</h5>
             <div class="btn-group" role="group">
               <Button Text="开始新会话" OnClick="CreateNewChat"></Button>
-              <Button Text="添加初始设置"></Button>
-              <Button Text="下载会话内容"></Button>
+              <Button Text="添加初始设置" OnClick="InitBot"></Button>
+              <Button Text="下载会话内容" OnClick="Download"></Button>
             </div>
           </div>
           <div class="card-body" id="scroll" style="overflow: auto; position: relative; height: calc(100vh - 196px)">
@@ -29,7 +29,7 @@
                   <img src="images/94ef-kqpyfha1660871.png"
                        alt="avatar 1" style="width: 45px; height: 100%;">
                   <div>
-                    <p class="small p-2 ms-3 mb-1 rounded-3" style="background-color: #f5f6f7;">@(new MarkupString(Markdown.ToHtml(message.ChatMessage!)))</p>
+                    <p class="small p-2 ms-3 mb-1 rounded-3" style="background-color: #f5f6f7;">@(new MarkupString(Markdown.ToHtml(message.ChatMessage!, _pipeline)))</p>
                     <p class="small ms-3 mb-3 rounded-3 text-muted">@message.CreateTime.ToString("yyyy-MM-dd HH:mm:ss")</p>
                   </div>
                 </div>
@@ -38,7 +38,7 @@
               {
                 <div class="d-flex flex-row justify-content-end mb-4 pt-1">
                   <div>
-                    <p class="small p-2 me-3 mb-1 text-white rounded-3 bg-primary">@(new MarkupString(Markdown.ToHtml(message.ChatMessage!)))</p>
+                    <p class="small p-2 me-3 mb-1 text-white rounded-3 bg-primary">@(new MarkupString(Markdown.ToHtml(message.ChatMessage!, _pipeline)))</p>
                     <p class="small me-3 mb-3 rounded-3 text-muted d-flex justify-content-end">@message.CreateTime.ToString("yyyy-MM-dd HH:mm:ss")</p>
                   </div>
                   <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava4-bg.webp"
@@ -53,7 +53,7 @@
                 <img src="images/94ef-kqpyfha1660871.png"
                      alt="avatar 1" style="width: 45px; height: 100%;">
                 <div>
-                  <p class="small p-2 ms-3 mb-1 rounded-3" style="background-color: #f5f6f7;">@(new MarkupString(Markdown.ToHtml(_response)))</p>
+                  <p class="small p-2 ms-3 mb-1 rounded-3" style="background-color: #f5f6f7;">@(new MarkupString(Markdown.ToHtml(_response, _pipeline)))</p>
                   <p class="small ms-3 mb-3 rounded-3 text-muted"><i class="fas fa-spinner fa-spin"></i>思考中，请稍后....</p>
                 </div>
               </div>

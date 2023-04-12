@@ -1,0 +1,54 @@
+﻿@using GptBlazor.Entity
+@using System.Diagnostics.CodeAnalysis
+@implements IResultDialog
+
+<div class="row">
+    <div class="col-12">
+        <Textarea @bind-Value="@InitInfo.SystemInfo" DisplayText="对话背景说明" ShowLabel="true"></Textarea>
+    </div>
+</div>
+<Button Icon="fa fa-plus" Text="添加新的模拟问答" OnClick="Add"></Button>
+<br/>
+@foreach (var info in InitInfo.SimpleBots)
+{
+    <div class="row">
+        <div class="col-5">
+            <BootstrapInput @bind-Value="@info.UserInput" DisplayText="问题" ShowLabel="true"></BootstrapInput>
+        </div>
+        <div class="col-6">
+            <BootstrapInput @bind-Value="@info.SimpleOutput" DisplayText="答案" ShowLabel="true"></BootstrapInput>
+        </div>
+        <div class="col-1">
+            <Button Icon="fas fa-minus" OnClick="() => Remove(info)"></Button>
+        </div>
+    </div>
+}
+
+
+@code {
+    [Parameter]
+    [NotNull]
+    public InitInfoEntity? InitInfo { get; set; }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        InitInfo ??= new InitInfoEntity();
+    }
+
+    public Task OnClose(DialogResult result)
+    {
+        return Task.CompletedTask;
+    }
+
+    private void Add()
+    {
+        InitInfo.SimpleBots.Add(new InitInfoEntity.SimpleBot());
+    }
+
+    private void Remove(InitInfoEntity.SimpleBot simpleBot)
+    {
+        InitInfo.SimpleBots.Remove(simpleBot);
+    }
+
+}
